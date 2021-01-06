@@ -10,36 +10,22 @@ using namespace std;
 // Variaveis para controle da projecao
 GLfloat fAspect;
 GLfloat ang_cam = 60;
-// Variaveis limite das janelas e da posicao z das janelas;
+
+// Variaveis para controle da janela
 #define Z_LIM_EJ 50
 #define Z_LIM_DJ -50
+GLfloat z_ej = 50, z_dj = -50;
 
+// Variaveis para controle da porta
 #define ANGLE_DOOR_MAX 71
 #define X_LIM_DOOR 55
 #define Z_LIM_DOOR -55
 #define XY_ONE_ANGLE 0.616666666
-
-
-GLfloat z_ej = 50, z_dj = -50;
-
 GLfloat x_trans_angle = 0, z_trans_angle = 0, angle_door = 0;
 
 // Objetos
 OBJ *plano, *mesa, *cadeira, *quadro, *porta, *janela, *lamp, *cama,
  *ventilador, *cabeceira, *quadrop, *luminaria, *computador, *armario;
-
-// Estrutura para definir um objeto generico
-// na cena (i.e. objetos sobre as mesas)
-typedef struct
-{
-	OBJ *objeto;
-	float transl[3];
-	float rot[4];
-	int mesa; 	// identifica a mesa onde o objeto esta
-} OBJETO;
-
-// Define um vetor de objetos
-vector<OBJETO *> objetos(0);
 
 // Define os limites de uma mesa
 typedef struct
@@ -53,7 +39,7 @@ MESA limites[37];	// 36 mesas + professor
 // Luminosidade base de uma lampada
 #define LOW	0.3
 
-// Define par�metros de iluminacao
+// Define parametros de iluminacao
 // Luz 1: puntual no teto, frente
 GLfloat luzAmb1[4] = { 0.1, 0.1, 0.1, 1 };	// luz ambiente
 GLfloat luzDif1[4] = { LOW, LOW, LOW, 1.0 };	// luz difusa
@@ -67,9 +53,6 @@ GLfloat rotX=0, rotY=0, rotX_ini, rotY_ini;
 GLfloat obsX=0, obsY=150, obsZ=100, obsY_ini;
 int x_ini,y_ini,bot;
 
-// Define modo de desenho inicial: solido
-char modo_des = 's';
-
 // Arquivo de cena e arquivo de camera
 char arqcena[20];
 char arqcam[20];
@@ -77,121 +60,10 @@ char arqcam[20];
 // Desenha 4 paredes
 void DesenhaParedes(void)
 {	
-	
-	// Desenha a porta
-	glPushMatrix();
-	glTranslatef(-230,101,400);
-	glScalef(1,0.99,1);
-	glRotatef(-180,0,1,0);
-	glRotated(180,0,0,1);
-	glRotated(angle_door,0,1,0);
-	glTranslatef(x_trans_angle,0,z_trans_angle);
-	DesenhaObjeto(porta);
-	glPopMatrix();
-
-	// quadro
-	glPushMatrix();
-	glTranslatef(297,200,25);
-	glRotatef(-90,0,1,0);
-	glScalef(10,10,10);
-	DesenhaObjeto(quadrop);
-	glPopMatrix();
-
-	// cama
-	glPushMatrix();
-	glTranslatef(180,34.5,-180);
-	glRotatef(-90,0,1,0);
-	glScalef(60,50,60);
-	DesenhaObjeto(cama);
-	glPopMatrix();
-
-	// ventilador
-	glPushMatrix();
-	glTranslatef(270,38,-85);
-	glRotatef(-135,0,1,0);
-	glScalef(60,50,60);
-	DesenhaObjeto(ventilador);
-	glPopMatrix();
-	
-	// mesa
-	glPushMatrix();
-	glTranslatef(260,59.3,100);
-	glRotatef(-90,0,1,0);
-	DesenhaObjeto(mesa);
-	glPopMatrix();
-
-	// cadeira
-	glPushMatrix();
-	glTranslatef(240,47.3,100);
-	glRotatef(90,0,1,0);
-	DesenhaObjeto(cadeira);
-	glPopMatrix();
-
-	// lampada (obj1)
-	glPushMatrix();
-	glTranslatef(0,297,0);
-	glRotatef(90,1,0,0);
-	glRotatef(90,0,0,1);
-	DesenhaObjeto(lamp);
-	glPopMatrix();
-
-	// quadro de estudo (obj2)
-	glPushMatrix();
-	glTranslatef(100,160,395);
-	glRotatef(180,0,1,0);
-	glScalef(0.5,0.5,2);
-	DesenhaObjeto(quadro);
-	glPopMatrix();
-
-	// luminaria (obj3)
-	glPushMatrix();
-	glTranslatef(320,71.5,260);
-	glRotatef(-110,0,1,0);
-	glScalef(250,250,250);
-	DesenhaObjeto(luminaria);
-	glPopMatrix();
-
-	// computador (obj4)
-	glPushMatrix();
-	glTranslatef(260,72,100);
-	glRotatef(-90,0,1,0);
-	glScalef(8,8,8);
-	DesenhaObjeto(computador);
-	glPopMatrix();
-
-	// armario (obj5)
-	glPushMatrix();
-	glTranslatef(0,53,30);
-	glRotatef(90,0,1,0);
-	glScalef(130,130,130);
-	DesenhaObjeto(armario);
-	glPopMatrix();
-
-	// janela
-	glPushMatrix();
-	glTranslatef(-300,150,0);
-	glRotatef(-90,0,1,0);
-	DesenhaObjeto(janela);
-	glPopMatrix();
-
-	// porta esquerda da janela
-	glPushMatrix();
-	glTranslatef(-300,150, z_ej);
-	glRotatef(90,0,1,0);
-	glScalef(1,1.5,1);
-	DesenhaObjeto(plano);
-	glPopMatrix();
-
-	// porta direita da janela
-	glPushMatrix();
-	glTranslatef(-300,150, z_dj);
-	glRotatef(90,0,1,0);
-	glScalef(1,1.5,1);
-	DesenhaObjeto(plano);
-	glPopMatrix();
 
 	// Seta cor da parede
 	glColor3ub(196,210,184);
+
 	// Parede dos fundos
 	glPushMatrix();
 	glTranslatef(0,150,-400);
@@ -267,6 +139,135 @@ void DesenhaParedes(void)
 
 }
 
+void DesenhaPorta(){
+
+	glColor3ub(230,230,230);
+	// Desenha a porta
+	glPushMatrix();
+	glTranslatef(-230,101,400);
+	glScalef(1,0.99,1);
+	glRotatef(-180,0,1,0);
+	glRotated(180,0,0,1);
+	glRotated(angle_door,0,1,0);
+	glTranslatef(x_trans_angle,0,z_trans_angle);
+	DesenhaObjeto(porta);
+	glPopMatrix();
+
+}
+
+void DesenhaJanela(){
+	
+	// janela
+	glPushMatrix();
+	glTranslatef(-300,150,0);
+	glRotatef(-90,0,1,0);
+	DesenhaObjeto(janela);
+	glPopMatrix();
+
+	// porta esquerda da janela
+	glPushMatrix();
+	glTranslatef(-300,150, z_ej);
+	glRotatef(90,0,1,0);
+	glScalef(1,1.5,1);
+	DesenhaObjeto(plano);
+	glPopMatrix();
+
+	// porta direita da janela
+	glPushMatrix();
+	glTranslatef(-300,150, z_dj);
+	glRotatef(90,0,1,0);
+	glScalef(1,1.5,1);
+	DesenhaObjeto(plano);
+	glPopMatrix();
+
+}
+
+void DesenhaObjObrigatorio(){
+
+	// quadro
+	glPushMatrix();
+	glTranslatef(297,200,25);
+	glRotatef(-90,0,1,0);
+	glScalef(10,10,10);
+	DesenhaObjeto(quadrop);
+	glPopMatrix();
+
+	// cama
+	glPushMatrix();
+	glTranslatef(180,34.5,-180);
+	glRotatef(-90,0,1,0);
+	glScalef(60,50,60);
+	DesenhaObjeto(cama);
+	glPopMatrix();
+
+	// ventilador
+	glPushMatrix();
+	glTranslatef(270,38,-85);
+	glRotatef(-135,0,1,0);
+	glScalef(60,50,60);
+	DesenhaObjeto(ventilador);
+	glPopMatrix();
+	
+	// mesa
+	glPushMatrix();
+	glTranslatef(260,59.3,100);
+	glRotatef(-90,0,1,0);
+	DesenhaObjeto(mesa);
+	glPopMatrix();
+
+	// cadeira
+	glPushMatrix();
+	glTranslatef(240,47.3,100);
+	glRotatef(90,0,1,0);
+	DesenhaObjeto(cadeira);
+	glPopMatrix();
+
+}
+
+void DesenhaObjExtra(){
+
+	// lampada (obj1)
+	glPushMatrix();
+	glTranslatef(0,297,0);
+	glRotatef(90,1,0,0);
+	glRotatef(90,0,0,1);
+	DesenhaObjeto(lamp);
+	glPopMatrix();
+
+	// quadro de estudo (obj2)
+	glPushMatrix();
+	glTranslatef(100,160,395);
+	glRotatef(180,0,1,0);
+	glScalef(0.5,0.5,2);
+	DesenhaObjeto(quadro);
+	glPopMatrix();
+
+	// luminaria (obj3)
+	glPushMatrix();
+	glTranslatef(320,71.5,260);
+	glRotatef(-110,0,1,0);
+	glScalef(250,250,250);
+	DesenhaObjeto(luminaria);
+	glPopMatrix();
+
+	// computador (obj4)
+	glPushMatrix();
+	glTranslatef(260,72,100);
+	glRotatef(-90,0,1,0);
+	glScalef(8,8,8);
+	DesenhaObjeto(computador);
+	glPopMatrix();
+
+	// armario (obj5)
+	glPushMatrix();
+	glTranslatef(0,53,30);
+	glRotatef(90,0,1,0);
+	glScalef(130,130,130);
+	DesenhaObjeto(armario);
+	glPopMatrix();
+
+}
+
 // Desenha o chao
 void DesenhaChao(void)
 {
@@ -313,22 +314,13 @@ void Desenha(void)
 	// antes da execucao de qualquer operacao de manipulacao de matrizes
 	glLoadIdentity();
 
-	// A partir deste ponto, deve-se posicionar
-	// as fontes de luz, observador e desenhar
-	// todos os objetos
 
-	// Fonte de luz 5 vai estar sempre na posicao
-	// do observador, olhando para z=-1, ou seja,
-	// para a frente
-
-	
 	// Posiciona e orienta observador
 	glRotatef(rotX,1,0,0);
 	glRotatef(rotY,0,1,0);
 	glTranslatef(-obsX,-obsY,-obsZ);
 
 	// Desenha toda a cena
-
 	glColor3f(1,1,1);   // branco
 
 	// Agora posiciona demais fontes de luz
@@ -339,6 +331,10 @@ void Desenha(void)
 	DesenhaParedes();
 	DesenhaChao();
 	DesenhaTeto();
+	DesenhaPorta();
+	DesenhaJanela();
+	DesenhaObjObrigatorio();
+	DesenhaObjExtra();
 
 	glutSwapBuffers();
 }
@@ -373,13 +369,6 @@ void AlteraTamanhoJanela(GLsizei w, GLsizei h)
 
 	EspecificaParametrosVisualizacao();
 }
-
-// Limpa o vetor de objetos
-void LiberaObjetos()
-{
-	objetos.clear();
-}
-
 
 // Funcao callback para eventos de teclado
 void Teclado(unsigned char key, int x, int y)
