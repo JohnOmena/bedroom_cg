@@ -34,6 +34,7 @@ OBJ *plano, *mesa, *cadeira, *quadro, *porta, *janela, *lamp, *cama,
 // Luz 1: puntual no teto, frente
 GLfloat luzAmb1[4] = { 0.1, 0.1, 0.1, 1 };	// luz ambiente
 GLfloat luzDif1[4] = { LOW, LOW, LOW, 1.0 };	// luz difusa
+
 // Luz 2: puntual no teto, meio da sala
 GLfloat luzDif2[4] = { LOW, LOW, LOW, 1.0 };	// luz difusa
 GLfloat posLuz2[4] = { 0, 200, 0, 1 };	// posicao da fonte de luz
@@ -59,6 +60,7 @@ void DesenhaParedes(void)
 	glTranslatef(0,150,-400);
 	glScalef(6,3,1);
 	DesenhaObjeto(plano);
+
 	// Retira a matriz do topo da pilha e torna esta última a matriz de transformação corrente
 	glPopMatrix();
 
@@ -133,6 +135,7 @@ void DesenhaParedes(void)
 void DesenhaPorta(){
 
 	glColor3ub(230,230,230);
+
 	// Desenha a porta
 	glPushMatrix();
 	glTranslatef(-230,101,400);
@@ -287,7 +290,6 @@ void DesenhaTeto(void)
 void DesenhaQuadro()
 {
 	glPushMatrix();
-	// Posiciona, orienta e desenha o quadro
 	glTranslatef(0,160,398);
 	glRotatef(180,0,1,0);
 	DesenhaObjeto(quadro);
@@ -331,6 +333,7 @@ void EspecificaParametrosVisualizacao(void)
 {
 	// Especifica sistema de coordenadas de projecao
 	glMatrixMode(GL_PROJECTION);
+	
 	// Inicializa sistema de coordenadas de projecao
 	glLoadIdentity();
 
@@ -407,20 +410,24 @@ void Teclado(unsigned char key, int x, int y)
 					exit(1);
 				break;
 	}
+	// Na próxima iteração por meio de glutMainLoop essa janela será exibida novamente
 	glutPostRedisplay();
 }
 
 // Funcao callback para eventos de teclas especiais
+// navegacao atraves das setas
 void TecladoEspecial(int key, int x, int y)
 {
-	float sina,cosa, sina_01, cosa_01;
+	float sina, cosa, sina_01, cosa_01;
 
-	// Pre-calcula o seno e cosseno do �ngulo
+	// Pre-calcula o seno e cosseno do angulo
 	// de direcao atual + 90 graus, ou seja,
 	// a direcao para deslocamento lateral
 	sina = 5*sin((rotY+90)*M_PI/180.0);
 	cosa = 5*cos((rotY+90)*M_PI/180.0);
 
+	// Pre-calcula o seno e cosseno do angulo
+	// sem os 90 graus
 	sina_01 = 5*sin(rotY*M_PI/180.0);
 	cosa_01 = 5*cos(rotY*M_PI/180.0);
 
@@ -441,13 +448,6 @@ void TecladoEspecial(int key, int x, int y)
 		case GLUT_KEY_DOWN:		obsX = obsX - sina_01;
 								obsZ = obsZ + cosa_01;
 								break;
-		// Controles de zoom in/out
-		case GLUT_KEY_HOME:		if(ang_cam++ > 150) ang_cam = 150;
-								EspecificaParametrosVisualizacao();
-								break;
-		case GLUT_KEY_END:		if(ang_cam-- < 5) ang_cam = 5;
-								EspecificaParametrosVisualizacao();
-								break;
 	}
 	glutPostRedisplay();
 }
@@ -457,7 +457,7 @@ void GerenciaMouse(int button, int state, int x, int y)
 {
 	if(state==GLUT_DOWN)
 	{
-		// Salva os parametros atuais
+		// Atualiza as variaveis de navegação com os valores atuais
 		x_ini = x;
 		y_ini = y;
 		obsY_ini = obsY;
@@ -471,6 +471,7 @@ void GerenciaMouse(int button, int state, int x, int y)
 // Funcao callback para eventos de movimento do mouse
 #define SENS_ROT	5.0
 #define SENS_OBS	10.0
+
 void GerenciaMovim(int x, int y)
 {
 	// Botao esquerdo ?
@@ -503,10 +504,14 @@ void Inicializa(void)
 	// Ajusta iluminacao
 	glLightfv( GL_LIGHT0, GL_AMBIENT,  luzAmb1 );
 	glLightfv( GL_LIGHT0, GL_DIFFUSE,  luzDif1 );
+
 	glLightfv( GL_LIGHT1, GL_AMBIENT,  luzAmb1 );
 	glLightfv( GL_LIGHT1, GL_DIFFUSE,  luzDif2 );
+
 	glLightfv( GL_LIGHT2, GL_AMBIENT,  luzAmb1 );
+
 	glLightfv( GL_LIGHT3, GL_AMBIENT,  luzAmb1 );
+
 	glLightfv( GL_LIGHT4, GL_AMBIENT,  luzAmb1 );
 
 	// Habilita todas as fontes de luz
@@ -515,25 +520,23 @@ void Inicializa(void)
 	glEnable(GL_LIGHT2);
 	glEnable(GL_LIGHT3);
 	glEnable(GL_LIGHT4);
+	// Faz com que seja utilizado os parametros atuais
+	// para calcular a cor ou indice do vertice
 	glEnable(GL_LIGHTING);
 
-	// Define coeficientes 	mbiente e difuso
-	// do material
-	GLfloat matAmb[4] = { 0.2,0.2,0.2,1 };
-	GLfloat matDif[4] = { 1,1,1,1 };
-
-	// Material
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,matAmb);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,matDif);
-
 	// Seleciona o modo de GL_COLOR_MATERIAL
-	glColorMaterial(GL_FRONT, GL_DIFFUSE);
+	// faz com que uma cor de material acompanhe a cor atual
+	glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
 	glEnable(GL_COLOR_MATERIAL);
 
 	// Habilita normalizacao automatica
+	// Vetores normais sao normalizados para valores unitarios
+	// apos transformacao e antes da iluminacao
 	glEnable(GL_NORMALIZE);
 
 	// Habilita Z-Buffer
+	// Realiza comparacoes de profundidade
+	// e atualiza o buffer de profundidade
 	glEnable(GL_DEPTH_TEST);
 
 	// Carrega objetos
@@ -557,7 +560,6 @@ void Inicializa(void)
 // Programa Principal
 int main(int argc, char** argv)
 {
-
 	// Inicilizar a Glut
 	glutInit(&argc, argv);
 
@@ -579,10 +581,10 @@ int main(int argc, char** argv)
 
 	// Registra a funcao callback de teclado
 	glutKeyboardFunc(Teclado);
-	
+
 	// Registra a funcao callback de teclas especiais
 	glutSpecialFunc(TecladoEspecial);
-
+	
 	// Registra a funcao callback para eventos de botoes do mouse
 	glutMouseFunc(GerenciaMouse);
 	
