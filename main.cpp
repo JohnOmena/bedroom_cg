@@ -27,15 +27,6 @@ GLfloat x_trans_angle = 0, z_trans_angle = 0, angle_door = 0;
 OBJ *plano, *mesa, *cadeira, *quadro, *porta, *janela, *lamp, *cama,
  *ventilador, *cabeceira, *quadrop, *luminaria, *computador, *armario;
 
-// Define os limites de uma mesa
-typedef struct
-{
-	float x,z;		// centro da mesa
-	float y;		// altura para os objetos
-} MESA;
-
-MESA limites[37];	// 36 mesas + professor
-
 // Luminosidade base de uma lampada
 #define LOW	0.3
 
@@ -54,8 +45,6 @@ GLfloat obsX=0, obsY=150, obsZ=100, obsY_ini;
 int x_ini,y_ini,bot;
 
 // Arquivo de cena e arquivo de camera
-char arqcena[20];
-char arqcam[20];
 
 // Desenha 4 paredes
 void DesenhaParedes(void)
@@ -65,10 +54,12 @@ void DesenhaParedes(void)
 	glColor3ub(196,210,184);
 
 	// Parede dos fundos
+	// Insere a matriz de transformação corrente na pilha
 	glPushMatrix();
 	glTranslatef(0,150,-400);
 	glScalef(6,3,1);
 	DesenhaObjeto(plano);
+	// Retira a matriz do topo da pilha e torna esta última a matriz de transformação corrente
 	glPopMatrix();
 
 	// Parede da frente
@@ -292,7 +283,7 @@ void DesenhaTeto(void)
 	glPopMatrix();
 }
 
-// Desenha o quadro-negro
+// Desenha o quadro de estudo
 void DesenhaQuadro()
 {
 	glPushMatrix();
@@ -314,20 +305,15 @@ void Desenha(void)
 	// antes da execucao de qualquer operacao de manipulacao de matrizes
 	glLoadIdentity();
 
-
 	// Posiciona e orienta observador
 	glRotatef(rotX,1,0,0);
 	glRotatef(rotY,0,1,0);
 	glTranslatef(-obsX,-obsY,-obsZ);
 
-	// Desenha toda a cena
-	glColor3f(1,1,1);   // branco
-
-	// Agora posiciona demais fontes de luz
+	// Agora posiciona a fonte de luz do meio da sala
 	glLightfv( GL_LIGHT1, GL_POSITION, posLuz2 );
 
-	
-	// E desenha todos os elementos da cena
+	// Desenha todos os elementos da cena
 	DesenhaParedes();
 	DesenhaChao();
 	DesenhaTeto();
@@ -336,6 +322,7 @@ void Desenha(void)
 	DesenhaObjObrigatorio();
 	DesenhaObjExtra();
 
+	// Faz a troca dos buffers
 	glutSwapBuffers();
 }
 
@@ -571,12 +558,8 @@ void Inicializa(void)
 int main(int argc, char** argv)
 {
 
+	// Inicilizar a Glut
 	glutInit(&argc, argv);
-	// Verifica se ha parametros suficientes
-	// Verificar se precisa disso pra meu projeto
-	
-	strcpy(arqcena,"sala3d.txt");
-	strcpy(arqcam,"camera.txt");
 
 	// Define o modo de operacao da GLUT
 	// GLUT_DOUBLE : dois buffers de cor
@@ -611,6 +594,7 @@ int main(int argc, char** argv)
 
 	// Chama a funcao responsavel por fazer as inicializacoes
 	Inicializa();
+
 	// Inicia o processamento e aguarda interacoes do usuario
 	glutMainLoop();
 	
