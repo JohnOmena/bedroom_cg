@@ -33,4 +33,4 @@ https://youtu.be/86o_8wFfEWU
 
 ## Imagem da modelagem (Atualizada)
 
-![screenshot](bedroom.png)
+![screenshot](bedroom2.png)
