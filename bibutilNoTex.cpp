@@ -1,70 +1,87 @@
 #include <math.h>
 #include <string.h>
 #include <vector>
-#include "bibutil.h"
+#include "bibutilNoTex.h"
 
 #define DEBUG
 
 using namespace std;
 
 
-vector<OBJ*> _objetos(0);
+vector<OBJnotex*> _objetosNoTex(0);
 
 
-vector<MAT*> _materiais(0);
+vector<MATnotex*> _materiaisNoTex(0);
+
+vector<TEXnotex*> _texturasNoTex(0);
 
 
-vector<TEX*> _texturas(0);
+char _modoNoTex = 't';
 
-char _modo = 't';
-
-int _numquadro =0, _tempo, _tempoAnterior = 0;
-float _ultqps = 0;
+int _numquadroNoTex =0, _tempoNoTex, _tempoAnteriorNoTex = 0;
+float _ultqpsNoTex = 0;
 
 #ifndef __FREEGLUT_EXT_H__
-void glutBitmapString(void *fonte,char *texto)
+
+void glutBitmapStringNoTex(void *fonte,char *texto)
 {
+	
 	while (*texto)
     	glutBitmapCharacter(fonte, *texto++);
 }
 #endif
 
-float CalculaQPS(void)
-{
-	_numquadro++;
 
-	_tempo = glutGet(GLUT_ELAPSED_TIME);
-	if (_tempo - _tempoAnterior > 1000)
+float CalculaQPSNoTex(void)
+{
+	
+	_numquadroNoTex++;
+
+	
+	_tempoNoTex = glutGet(GLUT_ELAPSED_TIME);
+	
+	if (_tempoNoTex - _tempoAnteriorNoTex > 1000)
 	{
-		_ultqps = _numquadro*1000.0/(_tempo - _tempoAnterior);
-	 	_tempoAnterior = _tempo;
-		_numquadro = 0;
+		
+		_ultqpsNoTex = _numquadroNoTex*1000.0/(_tempoNoTex - _tempoAnteriorNoTex);
+		
+	 	_tempoAnteriorNoTex = _tempoNoTex;
+		_numquadroNoTex = 0;
 	}
-	return _ultqps;
+	
+	return _ultqpsNoTex;
 }
 
-void Escreve2D(float x, float y, char *str)
+
+void Escreve2DNoTex(float x, float y, char *str)
 {
 	glMatrixMode(GL_PROJECTION);
+	
 	glPushMatrix();
 	glLoadIdentity();
+	
 	gluOrtho2D(0,1,0,1);
 	
 	glMatrixMode(GL_MODELVIEW);
+	
 	glPushMatrix();
 	glLoadIdentity();
 
+	
 	glRasterPos2f(x,y);
 	glColor3f(0,0,0);
-	glutBitmapString(GLUT_BITMAP_9_BY_15,str);
+	
+	glutBitmapStringNoTex(GLUT_BITMAP_9_BY_15,str);
 	
 	glMatrixMode(GL_PROJECTION);
+	
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
+	
 	glPopMatrix();
 }
 
-void Normaliza(VERT &norm)
+void NormalizaNoTex(VERTnotex &norm)
 {
 	float tam = sqrt(norm.x*norm.x
 			+norm.y*norm.y
@@ -75,16 +92,16 @@ void Normaliza(VERT &norm)
 	norm.z /= tam;
 }
 
-void ProdutoVetorial (VERT &v1, VERT &v2, VERT &vresult)
+void ProdutoVetorialNoTex(VERTnotex &v1, VERTnotex &v2, VERTnotex &vresult)
 {
 	vresult.x = v1.y * v2.z - v1.z * v2.y;
 	vresult.y = v1.z * v2.x - v1.x * v2.z;
 	vresult.z = v1.x * v2.y - v1.y * v2.x;
 }
 
-void VetorNormal(VERT vert1, VERT vert2, VERT vert3, VERT &n)
+void VetorNormalNoTex(VERTnotex vert1, VERTnotex vert2, VERTnotex vert3, VERTnotex &n)
 {
-    VERT vet1, vet2;
+    VERTnotex vet1, vet2;
     
     vet1.x = vert1.x - vert2.x;
     vet1.y = vert1.y - vert2.y;
@@ -92,11 +109,11 @@ void VetorNormal(VERT vert1, VERT vert2, VERT vert3, VERT &n)
     vet2.x = vert3.x - vert2.x;
     vet2.y = vert3.y - vert2.y;
     vet2.z = vert3.z - vert2.z;
-    ProdutoVetorial(vet2, vet1, n);
-    Normaliza(n);
+    ProdutoVetorialNoTex(vet2, vet1, n);
+    NormalizaNoTex(n);
 }
 
-void RotaZ(VERT &in, VERT &out, float ang)
+void RotaZNoTex(VERTnotex &in, VERTnotex &out, float ang)
 {
 	float arad = ang*M_PI/180.0;
 	out.x =  in.x * cos(arad) + in.y * sin(arad);
@@ -104,7 +121,7 @@ void RotaZ(VERT &in, VERT &out, float ang)
 	out.z =  in.z;
 }
 
-void RotaY(VERT &in, VERT &out, float ang)
+void RotaYNoTex(VERTnotex &in, VERTnotex &out, float ang)
 {
 	float arad = ang*M_PI/180.0;
 	out.x = in.x * cos(arad) - in.z * sin(arad);
@@ -112,7 +129,7 @@ void RotaY(VERT &in, VERT &out, float ang)
 	out.z = in.x * sin(arad) + in.z * cos(arad);
 }
 
-void RotaX(VERT &in, VERT &out, float ang)
+void RotaXNoTex(VERTnotex &in, VERTnotex &out, float ang)
 {
 	float arad = ang*M_PI/180.0;
 	out.x =  in.x;
@@ -120,8 +137,7 @@ void RotaX(VERT &in, VERT &out, float ang)
 	out.z = -in.y * sin(arad) + in.z * cos(arad);
 }
 
-
-int leNum(char **face, char *sep)
+int leNumNoTex(char **face, char *sep)
 {
 	char temp[10];
 	int pos = 0;
@@ -142,36 +158,40 @@ int leNum(char **face, char *sep)
 	return atoi(temp);
 }
 
-int _procuraMaterial(char *nome)
+
+int _procuraMaterialNoTex(char *nome)
 {
 	unsigned int i;
-	for(i=0;i<_materiais.size();++i)
-		if(!strcmp(nome,_materiais[i]->nome))
+	for(i=0;i<_materiaisNoTex.size();++i)
+		if(!strcmp(nome,_materiaisNoTex[i]->nome))
 			return i;
 	return -1;
 }
 
-MAT *ProcuraMaterial(char *nome)
+
+MATnotex *ProcuraMaterialNoTex(char *nome)
 {
-	int pos = _procuraMaterial(nome);
+	int pos = _procuraMaterialNoTex(nome);
 	if(pos == -1) return NULL;
-	else return _materiais[pos];
+	else return _materiaisNoTex[pos];
 }
 
-int _procuraTextura(char *nome)
+
+int _procuraTexturaNoTex(char *nome)
 {
 	unsigned int i;
-	for(i=0;i<_texturas.size();++i)
-		if(!strcmp(nome,_texturas[i]->nome))
+	for(i=0;i<_texturasNoTex.size();++i)
+		if(!strcmp(nome,_texturasNoTex[i]->nome))
 			return i;
 	return -1;
 }
 
-void _leMateriais(char *nomeArquivo)
+
+void _leMateriaisNoTex(char *nomeArquivo)
 {
 	char aux[256];
 	FILE *fp;
-	MAT *ptr;
+	MATnotex *ptr;
 	fp = fopen(nomeArquivo,"r");
 
 	while(!feof(fp))
@@ -182,17 +202,19 @@ void _leMateriais(char *nomeArquivo)
 		if(aux[0]=='#') continue;
 		if(!strncmp(aux,"newmtl",6)) 
 		{
-			if(_procuraMaterial(&aux[7])!=-1)
+
+			if(_procuraMaterialNoTex(&aux[7])!=-1)
 			{
 				ptr = NULL;
 				continue;
 			}
-			if((ptr = (MAT *) malloc(sizeof(MAT)))==NULL)
+			if((ptr = (MATnotex *) malloc(sizeof(MATnotex)))==NULL)
 			{
 				exit(1);
 			}
-			_materiais.push_back(ptr);
+			_materiaisNoTex.push_back(ptr);
 			strcpy(ptr->nome,&aux[7]);
+
 			ptr->ke[0] = ptr->ke[1] = ptr->ke[2] = 0.0;
 		}
 		if(!strncmp(aux,"Ka ",3)) 
@@ -214,7 +236,7 @@ void _leMateriais(char *nomeArquivo)
 		{
 			if(ptr==NULL) continue;
 			sscanf(aux,"Ns %f",&ptr->spec);
-			
+
 			ptr->spec = ptr->spec/1000.0 * 128;
 		}
 		if(!strncmp(aux,"d ",2)) 
@@ -231,28 +253,29 @@ void _leMateriais(char *nomeArquivo)
 	fclose(fp);
 }
 
-
-OBJ *CarregaObjeto(char *nomeArquivo, bool mipmap)
-{
+OBJnotex *CarregaObjetoNoTex(char *nomeArquivo, bool mipmap)
+{	
+	
 	int i;
 	int vcont,ncont,fcont,tcont;
 	int material, texid;
 	char aux[256];
-	TEX *ptr;
+	TEXnotex *ptr;
 	FILE *fp;
-	OBJ *obj;
-	
-	fp = fopen(nomeArquivo, "r"); 
+	OBJnotex *obj;
+
+	fp = fopen(nomeArquivo, "r");  
 
 #ifdef DEBUG
 #endif
 
-
-	if(fp == NULL)
+	if(fp == NULL){
           return NULL;
+	}
 
-	if ( ( obj = (OBJ *) malloc(sizeof(OBJ)) ) == NULL)
+	if ( ( obj = (OBJnotex *) malloc(sizeof(OBJnotex)) ) == NULL){
 		return NULL;
+	}
 
 	obj->numVertices  = 0;
 	obj->numFaces     = 0;
@@ -268,38 +291,45 @@ OBJ *CarregaObjeto(char *nomeArquivo, bool mipmap)
 	obj->normais = NULL;
 	obj->texcoords = NULL;
 
-
 	while(!feof(fp))
 	{
 		fgets(aux,255,fp);
 		if(!strncmp(aux,"v ",2)) 
 			obj->numVertices++;
-		if(!strncmp(aux,"f ",2)) 
+		if(!strncmp(aux,"f ",2))
 			obj->numFaces++;
 		if(!strncmp(aux,"vn ",3)) 
 			obj->numNormais++;
-		if(!strncmp(aux,"vt ",3))
+		if(!strncmp(aux,"vt ",3)) 
 			obj->numTexcoords++;
 	}
+
 	rewind(fp);
 
 #ifdef DEBUG
 #endif
 
-	if ( ( obj->vertices = (VERT *) malloc((sizeof(VERT)) * obj->numVertices) ) == NULL )
-		return NULL;
-
-	if ( ( obj->faces = (FACE *) malloc((sizeof(FACE)) * obj->numFaces) ) == NULL )
-		return NULL;
-
-	if(obj->numNormais)
-		if ( ( obj->normais = (VERT *) malloc((sizeof(VERT)) * obj->numNormais) ) == NULL )
-			return NULL;
-
-	if(obj->numTexcoords)
-		if ( ( obj->texcoords = (TEXCOORD *) malloc((sizeof(TEXCOORD)) * obj->numTexcoords) ) == NULL )
-			return NULL;
 	
+	if ( ( obj->vertices = (VERTnotex *) malloc((sizeof(VERTnotex)) * obj->numVertices) ) == NULL ){
+		return NULL;
+	}
+
+
+	if ( ( obj->faces = (FACEnotex *) malloc((sizeof(FACEnotex)) * obj->numFaces) ) == NULL ){
+		return NULL;
+	}
+
+
+	if(obj->numNormais){
+		if ( ( obj->normais = (VERTnotex *) malloc((sizeof(VERTnotex)) * obj->numNormais) ) == NULL )
+			return NULL;
+	}
+
+	if(obj->numTexcoords){
+		if ( ( obj->texcoords = (TEXCOORDnotex *) malloc((sizeof(TEXCOORDnotex)) * obj->numTexcoords) ) == NULL )
+			return NULL;
+	}
+
 
 	vcont = 0;
 	ncont = 0;
@@ -308,38 +338,18 @@ OBJ *CarregaObjeto(char *nomeArquivo, bool mipmap)
 	material = -1;
 	texid = -1;
 
-
+	
 	float minx,miny,minz;
 	float maxx,maxy,maxz;
 
-	
+
 	while(!feof(fp))
 	{
 		fgets(aux,255,fp);
 		aux[strlen(aux)-1]=0;	
+
 		if(aux[0]=='#') continue;
 
-		
-		if(!strncmp(aux,"mtllib",6))
-		{
-				_leMateriais(&aux[7]);
-				obj->tem_materiais = true;
-		}
-		if(!strncmp(aux,"usemtl",6))
-		{
-			material = _procuraMaterial(&aux[7]);
-			texid = -1;
-		}
-		if(!strncmp(aux,"usemat",6))
-		{
-			if(!strcmp(&aux[7],"(null)"))
-			{
-				texid = -1;
-				continue;
-			}
-			ptr = CarregaTextura(&aux[7],mipmap);
-			texid = ptr->texid;
-		}
 		if(!strncmp(aux,"v ",2))
 		{
 			sscanf(aux,"v %f %f %f",&obj->vertices[vcont].x,
@@ -368,8 +378,10 @@ OBJ *CarregaObjeto(char *nomeArquivo, bool mipmap)
 					&obj->normais[ncont].y,
 					&obj->normais[ncont].z);
 			ncont++;
+
 			obj->normais_por_vertice = true;
 		}
+
 		if(!strncmp(aux,"vt ",3))
 		{
 			sscanf(aux,"vt %f %f %f",&obj->texcoords[tcont].s,
@@ -380,7 +392,9 @@ OBJ *CarregaObjeto(char *nomeArquivo, bool mipmap)
 		if(!strncmp(aux,"f ",2))
 		{
 			char *ptr = aux+2;
+
 			obj->faces[fcont].mat = material;
+
 			obj->faces[fcont].texid = texid;
 			int vi[10],ti[10],ni[10];
 			char sep;
@@ -390,13 +404,13 @@ OBJ *CarregaObjeto(char *nomeArquivo, bool mipmap)
 			bool tem_n = false;
 			while(*ptr)
 			{
-				vi[nv] = leNum(&ptr,&sep);
+				vi[nv] = leNumNoTex(&ptr,&sep);
 				if(sep==' ')
 				{
 					nv++;
 					continue;
 				}
-				int aux = leNum(&ptr,&sep);
+				int aux = leNumNoTex(&ptr,&sep);
 				if(aux!=-1)
 				{
 					ti[nv] = aux;
@@ -407,7 +421,7 @@ OBJ *CarregaObjeto(char *nomeArquivo, bool mipmap)
 					nv++;
 					continue;
 				}
-				aux = leNum(&ptr,&sep);
+				aux = leNumNoTex(&ptr,&sep);
 				if(aux!=-1)
 				{
 					ni[nv] = aux;
@@ -435,32 +449,39 @@ OBJ *CarregaObjeto(char *nomeArquivo, bool mipmap)
 #ifdef DEBUG
 #endif
 	fclose(fp);
-	_objetos.push_back(obj);
+	_objetosNoTex.push_back(obj);
 	return obj;
 }
 
-void SetaModoDesenho(char modo)
+void SetaModoDesenhoNoTex(char modo)
 {
 	if(modo!='w' && modo!='s' && modo!='t') return;
-	_modo = modo;
+	_modoNoTex = modo;
 }
 
-void DesenhaObjeto(OBJ *obj)
-{
+void DesenhaObjetoNoTex(OBJnotex *obj)
+{	
+	
 	int i;	
 	GLint ult_texid, texid;	
 	GLenum prim = GL_POLYGON;	
-	GLfloat branco[4] = { 1.0, 1.0, 1.0, 1.0 };	
 
-	if(obj->dlist >= 1000)
+	GLfloat branco[4] = { 1.0, 1.0, 1.0, 1.0 };	
+	
+	
+	if(obj->dlist >= 1000){
+		
 		glNewList(obj->dlist-1000,GL_COMPILE_AND_EXECUTE);
+	}	
 	else if(obj->dlist > -1)
 	{
 		glCallList(obj->dlist);
 		return;
 	}
 
-	if(_modo=='w') prim = GL_LINE_LOOP;
+	
+	
+	if(_modoNoTex=='w') prim = GL_LINE_LOOP;
 
 	glPushAttrib(GL_LIGHTING_BIT);
 	glDisable(GL_TEXTURE_2D);
@@ -468,46 +489,54 @@ void DesenhaObjeto(OBJ *obj)
 	if(obj->tem_materiais)
 		glDisable(GL_COLOR_MATERIAL);
 
-
+	
 	ult_texid = -1;
+	
 	for(i=0; i<obj->numFaces; i++)
 	{
-
+		
 		if(!obj->normais_por_vertice)
 			glNormal3f(obj->normais[i].x,obj->normais[i].y,obj->normais[i].z);
 
+		
 		if(obj->faces[i].mat != -1)
 		{
+			
 			int mat = obj->faces[i].mat;
-			glMaterialfv(GL_FRONT,GL_AMBIENT,_materiais[mat]->ka);
-
-			if(obj->faces[i].texid != -1 && _modo=='t')
+			glMaterialfv(GL_FRONT,GL_AMBIENT,_materiaisNoTex[mat]->ka);
+			
+			
+			if(obj->faces[i].texid != -1 && _modoNoTex=='t')
 				glMaterialfv(GL_FRONT,GL_DIFFUSE,branco);
 			else
-				glMaterialfv(GL_FRONT,GL_DIFFUSE,_materiais[mat]->kd);
-			glMaterialfv(GL_FRONT,GL_SPECULAR,_materiais[mat]->ks);
-			glMaterialfv(GL_FRONT,GL_EMISSION,_materiais[mat]->ke);
-			glMaterialf(GL_FRONT,GL_SHININESS,_materiais[mat]->spec);
+				glMaterialfv(GL_FRONT,GL_DIFFUSE,_materiaisNoTex[mat]->kd);
+			glMaterialfv(GL_FRONT,GL_SPECULAR,_materiaisNoTex[mat]->ks);
+			glMaterialfv(GL_FRONT,GL_EMISSION,_materiaisNoTex[mat]->ke);
+			glMaterialf(GL_FRONT,GL_SHININESS,_materiaisNoTex[mat]->spec);
 		}
 
-
+		
 		if(obj->textura != -1)
 			texid = obj->textura;
 		else
+			
 			texid = obj->faces[i].texid;
 
+		
 		if(texid == -1 && ult_texid != -1)
 			glDisable(GL_TEXTURE_2D);
 
-		if (texid != -1 && texid != ult_texid && _modo=='t')
+		if (texid != -1 && texid != ult_texid && _modoNoTex=='t')
 		{
 		       glEnable(GL_TEXTURE_2D);
 		       glBindTexture(GL_TEXTURE_2D,texid);
 		}
 
 		glBegin(prim);
+
 		for(int vf=0; vf<obj->faces[i].nv;++vf)
 		{
+
 			if(obj->normais_por_vertice)
 				glNormal3f(obj->normais[obj->faces[i].norm[vf]].x,
 				obj->normais[obj->faces[i].norm[vf]].y,
@@ -516,146 +545,125 @@ void DesenhaObjeto(OBJ *obj)
 			if(texid!=-1)
 				glTexCoord2f(obj->texcoords[obj->faces[i].tex[vf]].s,
 				obj->texcoords[obj->faces[i].tex[vf]].t);
+
 			glVertex3f(obj->vertices[obj->faces[i].vert[vf]].x,
 		    	obj->vertices[obj->faces[i].vert[vf]].y,
 			obj->vertices[obj->faces[i].vert[vf]].z);
 		}
+
 		glEnd();
+
 
 		ult_texid = texid;
 	} 
 	
 	glDisable(GL_TEXTURE_2D);
+
 	glPopAttrib();
+
 	if(obj->dlist >= 1000)
 	{
 		glEndList();
+
 		obj->dlist-=1000;
 	}
 }
 
-void _liberaObjeto(OBJ *obj)
+void _liberaObjetoNoTex(OBJnotex *obj)
 {
+
 	if (obj->vertices != NULL)  free(obj->vertices);
 	if (obj->normais != NULL)   free(obj->normais);
 	if (obj->texcoords != NULL) free(obj->texcoords);
+
 	for(int i=0; i<obj->numFaces;++i)
 	{
 		if (obj->faces[i].vert != NULL) free(obj->faces[i].vert);
 		if (obj->faces[i].norm != NULL) free(obj->faces[i].norm);
 		if (obj->faces[i].tex  != NULL) free(obj->faces[i].tex);
 	}
+
 	if (obj->faces != NULL) free(obj->faces);
+
 	free(obj);
 }
 
-void LiberaObjeto(OBJ *obj)
+
+void LiberaObjetoNoTex(OBJnotex *obj)
 {
 	unsigned int o;
 	if(obj==NULL)	
 	{
-		for(o=0;o<_objetos.size();++o)
-			_liberaObjeto(_objetos[o]);
-		_objetos.clear();
+		for(o=0;o<_objetosNoTex.size();++o)
+			_liberaObjetoNoTex(_objetosNoTex[o]);
+		_objetosNoTex.clear();
 	}
 	else
 	{
-		vector<OBJ*>::iterator it = _objetos.begin();
-		for(it = _objetos.begin(); it<_objetos.end(); ++it)
+
+		vector<OBJnotex*>::iterator it = _objetosNoTex.begin();
+		for(it = _objetosNoTex.begin(); it<_objetosNoTex.end(); ++it)
+
 			if(*it == obj)
 				break;
-		_objetos.erase(it);
-		_liberaObjeto(obj);
+
+		_objetosNoTex.erase(it);
+
+		_liberaObjetoNoTex(obj);
 	}
 }
 
-void LiberaMateriais()
+
+void LiberaMateriaisNoTex()
 {
 	unsigned int i;
 #ifdef DEBUG
+
 #endif
-	for(i=0;i<_materiais.size();++i)
+
+	for(i=0;i<_materiaisNoTex.size();++i)
 	{
 #ifdef DEBUG
 
 #endif
-		free(_materiais[i]);
+
+		free(_materiaisNoTex[i]);
 	}
-	_materiais.clear();
-#ifdef DEBUG
-#endif
-	for(i=0;i<_texturas.size();++i)
-	{
+
+	_materiaisNoTex.clear();
 #ifdef DEBUG
 
 #endif
-		free(_texturas[i]);
+
+	for(i=0;i<_texturasNoTex.size();++i)
+	{
+
+#ifdef DEBUG
+
+#endif
+		free(_texturasNoTex[i]);
 	}
-	_texturas.clear();
+
+	_texturasNoTex.clear();
 }
 
-void CalculaNormaisPorFace(OBJ *obj)
+
+void CalculaNormaisPorFaceNoTex(OBJnotex *obj)
 {
 	int i;
+
 	if(obj->normais_por_vertice) return;
-	if ( ( obj->normais = (VERT *) malloc((sizeof(VERT)) * obj->numFaces) ) == NULL )
+
+	if ( ( obj->normais = (VERTnotex *) malloc((sizeof(VERTnotex)) * obj->numFaces) ) == NULL )
 			return;
+
 	for(i=0; i<obj->numFaces; i++)
-	VetorNormal(obj->vertices[obj->faces[i].vert[0]],
+	VetorNormalNoTex(obj->vertices[obj->faces[i].vert[0]],
 		obj->vertices[obj->faces[i].vert[1]],
 		obj->vertices[obj->faces[i].vert[2]],obj->normais[i]);
 }
 
-
-TEX *CarregaTextura(char *arquivo, bool mipmap)
-{
-	GLenum formato;
-
-	if(!arquivo)		
-		return NULL;
-
-	int indice = _procuraTextura(arquivo);
-
-	if(indice!=-1)
-		return _texturas[indice];
-
-	TEX *pImage = CarregaJPG(arquivo);	
-
-	if(pImage == NULL)	
-		exit(0);
-
-	strcpy(pImage->nome,arquivo);
-	glGenTextures(1, &pImage->texid);
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glBindTexture(GL_TEXTURE_2D, pImage->texid);
-
-	if(pImage->ncomp==1) formato = GL_LUMINANCE;
-	else formato = GL_RGB;
-
-	if(mipmap)
-	{
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, pImage->dimx, pImage->dimy,
-			formato, GL_UNSIGNED_BYTE, pImage->data);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	}
-	else
-	{
-		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, pImage->dimx, pImage->dimx,
-			0, formato, GL_UNSIGNED_BYTE, pImage->data);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-
-
-	free(pImage->data); 	
-	_texturas.push_back(pImage);
-	return pImage;
-}
-
-
-GLenum faces[6] = {
+GLenum face[6] = {
   GL_TEXTURE_CUBE_MAP_POSITIVE_X,
   GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
   GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
@@ -664,74 +672,10 @@ GLenum faces[6] = {
   GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 };
 
-char *nomes[] = {
+char *nomesNoTex[] = {
 		"posx", "negx", "posy", "negy", "posz", "negz" };
 
-
-TEX *CarregaTexturasCubo(char *nomebase, bool mipmap)
-{
-	GLenum formato;
-	TEX *primeira;
-
-	if(!nomebase)		
-		return NULL;
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	for(int i=0;i<6;++i)
-	{
-		char arquivo[100];
-
-		int indice = _procuraTextura(nomebase);
-		if(indice!=-1)
-			return _texturas[indice];
-
-
-		TEX *pImage = CarregaJPG(arquivo,false);
-
-		if(pImage == NULL)	
-			exit(0);
-
-		if(!i)
-		{
-			primeira = pImage;
-			glGenTextures(1, &pImage->texid);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, pImage->texid);
-			strcpy(pImage->nome,arquivo);
-		}
-
-		if(pImage->ncomp==1) formato = GL_LUMINANCE;
-		else formato = GL_RGB;
-
-		if(mipmap)
-			gluBuild2DMipmaps(faces[i], GL_RGB, pImage->dimx, pImage->dimy,
-			formato, GL_UNSIGNED_BYTE, pImage->data);
-		else
-			glTexImage2D (faces[i], 0, GL_RGB, pImage->dimx, pImage->dimx,
-				0, formato, GL_UNSIGNED_BYTE, pImage->data);
-
-
-		free(pImage->data); 	
-
-		if(!i) _texturas.push_back(pImage);
-		else free(pImage);
-	}
-
-	if(mipmap)
-	{
-		glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	}
-	else
-	{
-		glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-
-	return primeira;
-}
-
-void SetaFiltroTextura(GLint tex, GLint filtromin, GLint filtromag)
+void SetaFiltroTexturaNoTex(GLint tex, GLint filtromin, GLint filtromag)
 {
 	glEnable(GL_TEXTURE_2D);
 	if(tex!=-1)
@@ -741,9 +685,9 @@ void SetaFiltroTextura(GLint tex, GLint filtromin, GLint filtromag)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtromag);
 	}
 	else
-	for(unsigned int i=0;i<_texturas.size();++i)
+	for(unsigned int i=0;i<_texturasNoTex.size();++i)
 	{
-		glBindTexture(GL_TEXTURE_2D,_texturas[i]->texid);
+		glBindTexture(GL_TEXTURE_2D,_texturasNoTex[i]->texid);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtromin);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtromag);
 	}
@@ -751,7 +695,7 @@ void SetaFiltroTextura(GLint tex, GLint filtromin, GLint filtromag)
 }
 
 
-void DesabilitaDisplayList(OBJ *ptr)
+void DesabilitaDisplayListNoTex(OBJnotex *ptr)
 {
 	if(ptr == NULL) return;
 	if(ptr->dlist > 0 && ptr->dlist < 1000) 
@@ -763,89 +707,26 @@ void DesabilitaDisplayList(OBJ *ptr)
 }
 
 
-void _criaDList(OBJ *ptr)
+void _criaDListNoTex(OBJnotex *ptr)
 {
+
 	if(ptr->dlist == -1) ptr->dlist = glGenLists(1);
 
 	ptr->dlist = ptr->dlist + 1000;
 }
 
-void CriaDisplayList(OBJ *ptr)
+
+void CriaDisplayListNoTex(OBJnotex *ptr)
 {
 	if(ptr==NULL)
 	{
-		for(unsigned int i=0;i<_objetos.size();++i)
+		for(unsigned int i=0;i<_objetosNoTex.size();++i)
 		{
-			ptr = _objetos[i];
+			ptr = _objetosNoTex[i];
+
 			if(ptr->dlist == -2) continue;
-			_criaDList(ptr);
+			_criaDListNoTex(ptr);
 		}
 	}
-	else if(ptr->dlist != -2)_criaDList(ptr);
+	else if(ptr->dlist != -2)_criaDListNoTex(ptr);
 }
-
-void DecodificaJPG(jpeg_decompress_struct* cinfo, TEX *pImageData, bool inverte)
-{
-	jpeg_read_header(cinfo, TRUE);
-	
-
-	jpeg_start_decompress(cinfo);
-
-	pImageData->ncomp = cinfo->num_components;
-	pImageData->dimx  = cinfo->image_width;
-	pImageData->dimy  = cinfo->image_height;
-
-	int rowSpan = pImageData->ncomp * pImageData->dimx;
-	pImageData->data = new unsigned char[rowSpan * pImageData->dimy];
-		
-	int height = pImageData->dimy - 1;
-	unsigned char** rowPtr = new unsigned char*[pImageData->dimy];
-	if(inverte)
-		for (int i = 0; i <= height; i++)
-			rowPtr[height - i] = &(pImageData->data[i*rowSpan]);
-	else
-		for (int i = 0; i <= height; i++)
-			rowPtr[i] = &(pImageData->data[i*rowSpan]);
-
-	int rowsRead = 0;
-	while (cinfo->output_scanline < cinfo->output_height) 
-	{
-		rowsRead += jpeg_read_scanlines(cinfo, &rowPtr[rowsRead], cinfo->output_height - rowsRead);
-	}
-	
-	delete [] rowPtr;
-
-	jpeg_finish_decompress(cinfo);
-}
-
-TEX *CarregaJPG(const char *filename, bool inverte)
-{
-	struct jpeg_decompress_struct cinfo;
-	TEX *pImageData = NULL;
-	FILE *pFile;
-	
-	if((pFile = fopen(filename, "rb")) == NULL) 
-	{
-
-		return NULL;
-	}
-	
-	jpeg_error_mgr jerr;
-
-	cinfo.err = jpeg_std_error(&jerr);
-	
-	jpeg_create_decompress(&cinfo);
-	
-	jpeg_stdio_src(&cinfo, pFile);
-	
-	pImageData = (TEX*)malloc(sizeof(TEX));
-
-	DecodificaJPG(&cinfo, pImageData, inverte);
-	
-	jpeg_destroy_decompress(&cinfo);
-	
-	fclose(pFile);
-
-	return pImageData;
-}
-

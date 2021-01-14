@@ -1,6 +1,6 @@
 # Blender v2.74 (sub 0) OBJ File: ''
 # www.blender.org
-mtllib lamp-1.mtl
+mtllib obj/luminaria.mtl
 o Cylinder005
 v -0.681119 0.101423 0.459197
 v -0.673857 0.101423 0.457653

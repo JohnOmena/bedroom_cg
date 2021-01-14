@@ -1,6 +1,6 @@
 # Blender OBJ File: /home/flash/doc/book/codigos/cadeira2.blend
 # www.blender.org
-mtllib cadeira2.mtl
+mtllib obj/cadeira.mtl
 o o_Mesh.002_Chair2_o_Mesh.002_Chair2
 v 16.0868549347 27.1546916962 -14.5084285736
 v 16.1830539703 28.301700592 -13.6446647644

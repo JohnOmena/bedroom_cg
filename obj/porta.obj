@@ -1,6 +1,6 @@
 # Blender OBJ File: /home/flash/doc/book/codigos/porta.blend
 # www.blender.org
-mtllib porta.mtl
+mtllib obj/porta.mtl
 o Curve_Porta
 v 40.4747657776 -6.03193283081 2.02865886688
 v 37.146232605 -6.03193283081 2.0011677742

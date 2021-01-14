@@ -1,18 +1,12 @@
-#ifndef __BIBUTIL_H
-#define __BIBUTIL_H
-
+#ifndef __BIBUTILNOTEX_H
+#define __BIBUTILNOTEX_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <GL/glut.h>
 
-extern "C" {
-	#include <jpeglib.h>
-}
-
 #ifndef M_PI
 #define M_PI 3.1415926
 #endif
-
 
 typedef struct
 {
@@ -22,13 +16,11 @@ typedef struct
 	GLint dimy;				
 	GLuint texid;			
 	unsigned char *data;	
-} TEX;
-
+} TEXnotex;
 
 typedef struct {
 	GLfloat x,y,z;
-} VERT;
-
+} VERTnotex;
 
 typedef struct {
 	GLint nv;		
@@ -37,13 +29,11 @@ typedef struct {
 	GLint *tex;		
 	GLint mat;		
 	GLint texid;	
-} FACE;
-
+} FACEnotex;
 
 typedef struct {
 	GLfloat s,t,r;
-} TEXCOORD;
-
+} TEXCOORDnotex;
 
 typedef struct {
 	GLint numVertices;
@@ -54,13 +44,13 @@ typedef struct {
 	bool tem_materiais;			
 	GLint textura;				
 	GLint dlist;				
-	VERT *vertices;
-	VERT *normais;
-	FACE *faces;
-	TEXCOORD *texcoords;
-} OBJ;
+	VERTnotex *vertices;
+	VERTnotex *normais;
+	FACEnotex *faces;
+	TEXCOORDnotex *texcoords;
+} OBJnotex;
 
-
+// Define um material
 typedef struct {
 	char nome[20];	
 	GLfloat ka[4];	
@@ -68,39 +58,33 @@ typedef struct {
 	GLfloat ks[4];	
 	GLfloat ke[4];	
 	GLfloat spec;	
-} MAT;
-
-void Normaliza(VERT &norm);
-void ProdutoVetorial (VERT &v1, VERT &v2, VERT &vresult);
-void VetorNormal(VERT vert1, VERT vert2, VERT vert3, VERT &n);
-void RotaZ(VERT &in, VERT &out, float ang);
-void RotaY(VERT &in, VERT &out, float ang);
-void RotaX(VERT &in, VERT &out, float ang);
+} MATnotex;
 
 
-OBJ *CarregaObjeto(char *nomeArquivo, bool mipmap);
-void CriaDisplayList(OBJ *obj);
-void DesabilitaDisplayList(OBJ *ptr);
-void DesenhaObjeto(OBJ *obj);
-void SetaModoDesenho(char modo);
+void NormalizaNoTex(VERTnotex &norm);
+void ProdutoVetorialNoTex(VERTnotex &v1, VERTnotex &v2, VERTnotex &vresult);
+void VetorNormalNoTex(VERTnotex vert1, VERTnotex vert2, VERTnotex vert3, VERTnotex &n);
+void RotaZNoTex(VERTnotex &in, VERTnotex &out, float ang);
+void RotaYNoTex(VERTnotex &in, VERTnotex &out, float ang);
+void RotaXNoTex(VERTnotex &in, VERTnotex &out, float ang);
+
+OBJnotex *CarregaObjetoNoTex(char *nomeArquivo, bool mipmap);
+void CriaDisplayListNoTex(OBJnotex *obj);
+void DesabilitaDisplayListNoTex(OBJnotex *ptr);
+void DesenhaObjetoNoTex(OBJnotex *obj);
+void SetaModoDesenhoNoTex(char modo);
+
+void LiberaObjetoNoTex(OBJnotex *obj);
+void LiberaMateriaisNoTex();
 
 
-void LiberaObjeto(OBJ *obj);
-void LiberaMateriais();
+float CalculaQPSNoTex(void);
+void Escreve2DNoTex(float x, float y, char *str);
 
+void CalculaNormaisPorFaceNoTex(OBJnotex *obj);
 
-float CalculaQPS(void);
-void Escreve2D(float x, float y, char *str);
-
-void CalculaNormaisPorFace(OBJ *obj);
-
-
-TEX *CarregaTextura(char *arquivo, bool mipmap);
-TEX *CarregaTexturasCubo(char *arquivo, bool mipmap);
-void SetaFiltroTextura(GLint tex, GLint filtromin, GLint filtromag);
-MAT *ProcuraMaterial(char *nome);
-TEX *CarregaJPG(const char *filename, bool inverte=true);
-
+void SetaFiltroTexturaNoTex(GLint tex, GLint filtromin, GLint filtromag);
+MATnotex *ProcuraMaterialNoTex(char *nome);
 
 #ifndef GL_ARB_texture_cube_map
 # define GL_NORMAL_MAP					0x8511

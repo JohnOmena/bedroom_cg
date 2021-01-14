@@ -1,6 +1,6 @@
 # Blender OBJ File: /home/flash/doc/book/livro/codigos/quadronegro.blend
 # www.blender.org
-mtllib quadronegro.mtl
+mtllib obj/quadronegro.mtl
 o Cube_Cube
 v 250.054977417 100.000015259 -1.67565345764
 v 250.054977417 -99.9999847412 -1.67565345764

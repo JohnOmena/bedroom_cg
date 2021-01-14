@@ -1,6 +1,6 @@
 # Blender OBJ File: /home/flash/doc/book/codigos/mesagrande.blend
 # www.blender.org
-mtllib mesagrande.mtl
+mtllib obj/mesa.mtl
 o Grid_MesaGrande
 v 60.0000038147 7.99999761581 30.0000019073
 v 46.6666717529 7.99999761581 30.0000019073

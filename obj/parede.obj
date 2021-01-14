@@ -1,6 +1,6 @@
 # Blender OBJ File: /home/flash/tmp/blender/parede.blend
 # www.blender.org
-mtllib parede.mtl
+mtllib obj/parede.mtl
 o Grid_Parede
 v 50.0 -50.0 0.0
 v 38.8888893127 -50.0 0.0

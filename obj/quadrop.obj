@@ -1,6 +1,6 @@
 # Blender v2.74 (sub 0) OBJ File: ''
 # www.blender.org
-mtllib oil-paintings-with-frame.mtl
+mtllib obj/quadro.mtl
 o Leinwand1
 v -1.629200 -3.500000 0.000500
 v -1.629200 3.500000 0.000500

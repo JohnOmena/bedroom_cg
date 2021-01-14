@@ -1,6 +1,6 @@
 # Blender OBJ File: /home/flash/doc/book/codigos/lampada.blend
 # www.blender.org
-mtllib lampada.mtl
+mtllib obj/lampada.mtl
 o Curve_Porta
 v 5.03260850906 72.812713623 -2.27063822746
 v 5.03260850906 -72.8052825928 -2.27063822746

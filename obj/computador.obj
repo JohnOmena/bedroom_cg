@@ -1,6 +1,6 @@
 # Blender v2.74 (sub 0) OBJ File: ''
 # www.blender.org
-mtllib computer.mtl
+mtllib obj/computador.mtl
 o Box63
 v 2.492902 0.201000 0.260922
 v 2.493097 0.201000 0.104523

@@ -1,6 +1,6 @@
 # Blender OBJ File: /home/flash/doc/book/codigos/janela.blend
 # www.blender.org
-mtllib janela.mtl
+mtllib obj/janela.mtl
 o Curve_Porta
 v -100.043045044 76.2793655396 -6.34025621414
 v -100.043045044 -76.2973937988 -6.34025621414
