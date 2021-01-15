@@ -29,7 +29,7 @@
 
 ## Vídeo de demonstração (Youtube - Desatualizado)
 
-https://youtu.be/86o_8wFfEWU
+https://youtu.be/ec7s8h29cPY
 
 ## Imagem da modelagem (Atualizada)
 
